@@ -679,28 +679,9 @@
         </div>
     </div>
 
-    <!-- FIREBASE MODULES & LOGIC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global environment variables (Robust Parsing)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mithil-astik-portfolio';
-        const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        let firebaseConfig = null;
-        try {
-            // Safely parse the config to prevent a ReferenceError from halting the entire script 
-            if (typeof __firebase_config !== 'undefined') {
-                firebaseConfig = JSON.parse(__firebase_config);
-            }
-        } catch (error) {
-            console.warn("Firebase configuration not found or invalid. Booting into offline mode.");
-        }
-
+    <!-- LOCAL STORAGE LOGIC -->
+    <script>
         // --- BOOT SEQUENCE --- 
-        // Boot sequence runs regardless of Firebase status to ensure UI doesn't freeze
         const bootScreen = document.getElementById('boot-screen');
         const bootCounter = document.getElementById('boot-counter');
         const bootLogs = document.getElementById('boot-logs');
@@ -827,51 +808,23 @@
 
         closeStatusBtn.addEventListener('click', hideStatus);
 
-        // --- FIREBASE INITIALIZATION ---
-        let app, auth, db;
-        let currentUser = null;
+        // --- LOCAL STORAGE LOGIC ---
+        const STORAGE_KEY = 'mithil_astik_messages';
 
-        if (firebaseConfig) {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
+        function getMessages() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
 
-            const initAuth = async () => {
-                try {
-                    if (initialToken) {
-                        await signInWithCustomToken(auth, initialToken);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } catch (err) {
-                    console.error("Auth failed", err);
-                }
-            };
-
-            onAuthStateChanged(auth, (user) => {
-                currentUser = user;
-                // If dashboard is open, re-evaluate UI state dynamically
-                if (!adminDashboard.classList.contains('hidden')) {
-                    updateAdminUI();
-                }
-            });
-
-            initAuth();
+        function saveMessages(msgs) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+            // Dispatch a custom event so the dashboard can auto-refresh
+            window.dispatchEvent(new Event('messages_updated'));
         }
 
         // --- FORM HANDLING ---
-        contactForm.addEventListener('submit', async (e) => {
+        contactForm.addEventListener('submit', (e) => {
             e.preventDefault();
-
-            if (!db || !auth) {
-                showStatus("SYSTEM OFFLINE", "DATABASE NOT CONNECTED.");
-                return;
-            }
-
-            if (!currentUser) {
-                showStatus("ACCESS DENIED", "SYSTEM NOT AUTHENTICATED. PLEASE REFRESH.");
-                return;
-            }
 
             const name = document.getElementById('form-name').value;
             const email = document.getElementById('form-email').value;
@@ -880,26 +833,30 @@
             submitBtn.disabled = true;
             submitBtn.innerText = "EXECUTING...";
 
-            try {
-                const messagesCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+            setTimeout(() => {
+                try {
+                    const newMsg = {
+                        id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15),
+                        name,
+                        email,
+                        message,
+                        timestamp: new Date().toISOString()
+                    };
 
-                await addDoc(messagesCol, {
-                    name,
-                    email,
-                    message,
-                    timestamp: serverTimestamp(),
-                    senderUid: currentUser.uid
-                });
+                    const msgs = getMessages();
+                    msgs.push(newMsg);
+                    saveMessages(msgs);
 
-                showStatus("MISSION SUCCESS", "TRANSMISSION RECEIVED. EXPECT CHAOS.", "success");
-                contactForm.reset();
-            } catch (err) {
-                console.error(err);
-                showStatus("SYSTEM FAILURE", "MESSAGE REJECTED BY SERVER. TRY AGAIN.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = "EXECUTE SUBMISSION &crarr;";
-            }
+                    showStatus("MISSION SUCCESS", "TRANSMISSION RECEIVED. EXPECT CHAOS.", "success");
+                    contactForm.reset();
+                } catch (err) {
+                    console.error(err);
+                    showStatus("SYSTEM FAILURE", "LOCAL STORAGE REJECTED SUBMISSION.");
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = "EXECUTE SUBMISSION &crarr;";
+                }
+            }, 600); // Simulate network delay
         });
 
         // --- ADMIN DASHBOARD ---
@@ -914,35 +871,20 @@
         const adminLoginSubmit = document.getElementById('admin-login-submit');
         const messagesContainer = document.getElementById('messages-container');
 
-        let messagesUnsubscribe = null;
         let isAdminAuthenticated = false;
         const ADMIN_PASSPHRASE = "mithu0406";
 
         // Toggle UI states between Login and Dashboard
         function updateAdminUI() {
-            if (!db || !auth) {
-                adminLoginView.classList.add('hidden');
-                adminContentView.classList.remove('hidden');
-                adminLogoutBtn.classList.add('hidden');
-                messagesContainer.innerHTML = `<div class="p-8 border-heavy border-alert bg-alert text-paper text-center font-display text-4xl shadow-brutal">SYSTEM OFFLINE. DB UNAVAILABLE.</div>`;
-                return;
-            }
-
-            // A user is fully signed in and verified the passphrase
             if (isAdminAuthenticated) {
                 adminLoginView.classList.add('hidden');
                 adminContentView.classList.remove('hidden');
                 adminLogoutBtn.classList.remove('hidden');
-                startMessagesListener();
+                renderMessagesFeed();
             } else {
-                // Show Login screen
                 adminLoginView.classList.remove('hidden');
                 adminContentView.classList.add('hidden');
                 adminLogoutBtn.classList.add('hidden');
-                if (messagesUnsubscribe) {
-                    messagesUnsubscribe();
-                    messagesUnsubscribe = null;
-                }
             }
         }
 
@@ -957,10 +899,6 @@
             adminDashboard.classList.add('hidden');
             adminDashboard.classList.remove('flex');
             document.body.classList.remove('overflow-hidden');
-            if (messagesUnsubscribe) {
-                messagesUnsubscribe();
-                messagesUnsubscribe = null;
-            }
         });
 
         // Handle Admin Login Submission
@@ -971,7 +909,6 @@
             adminLoginSubmit.disabled = true;
             adminLoginSubmit.innerText = "AUTHENTICATING...";
 
-            // Simulate authentication delay for brutalist effect
             setTimeout(() => {
                 if (pass === ADMIN_PASSPHRASE) {
                     isAdminAuthenticated = true;
@@ -991,42 +928,32 @@
             updateAdminUI();
         });
 
-        // Real-Time Messages Feed
-        function startMessagesListener() {
-            if (!db || !auth || !currentUser) return;
-
-            const messagesCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
-            messagesContainer.innerHTML = `<div class="p-8 border-heavy border-paper text-center font-display text-3xl text-acid blink mt-12">DOWNLOADING FROM MAINFRAME...</div>`;
-
-            messagesUnsubscribe = onSnapshot(messagesCol, (snapshot) => {
-                let msgs = [];
-                snapshot.forEach(doc => {
-                    msgs.push({ id: doc.id, ...doc.data() });
-                });
-
-                // Descending order (newest first)
-                msgs.sort((a, b) => {
-                    const timeA = a.timestamp?.toMillis() || 0;
-                    const timeB = b.timestamp?.toMillis() || 0;
-                    return timeB - timeA;
-                });
-
-                renderMessages(msgs);
-            }, (error) => {
-                console.error("Error fetching messages:", error);
-                messagesContainer.innerHTML = `<div class="p-8 border-heavy border-alert bg-alert text-paper text-center font-display text-4xl shadow-brutal mt-12">CRITICAL DB ERROR.</div>`;
-            });
-        }
+        // Auto-refresh when new message is added while dashboard is open
+        window.addEventListener('messages_updated', () => {
+            if (isAdminAuthenticated && !adminDashboard.classList.contains('hidden')) {
+                renderMessagesFeed();
+            }
+        });
 
         // Render Message Cards + Delete Buttons
-        function renderMessages(msgs) {
+        function renderMessagesFeed() {
+            let msgs = getMessages();
+
+            // Descending order (newest first)
+            msgs.sort((a, b) => {
+                const timeA = new Date(a.timestamp).getTime();
+                const timeB = new Date(b.timestamp).getTime();
+                return timeB - timeA;
+            });
+
             if (msgs.length === 0) {
                 messagesContainer.innerHTML = `<div class="p-12 border-heavy border-paper text-center font-display text-5xl text-paper bg-ink opacity-50 border-dashed mt-12">ARCHIVE EMPTY.</div>`;
                 return;
             }
 
             messagesContainer.innerHTML = msgs.map((msg, idx) => {
-                const dateStr = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleString() : 'JUST NOW (SYNCING)';
+                const dateObj = new Date(msg.timestamp);
+                const dateStr = dateObj.toLocaleString();
                 const shadowColor = idx % 2 === 0 ? '#DFFF00' : '#00FFFF';
 
                 return `
@@ -1055,7 +982,7 @@
         }
 
         // Handle Delete Button Clicks (Event Delegation)
-        messagesContainer.addEventListener('click', async (e) => {
+        messagesContainer.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-msg-btn')) {
                 const msgId = e.target.getAttribute('data-id');
                 const btn = e.target;
@@ -1066,19 +993,12 @@
                 btn.classList.replace('text-paper', 'text-acid');
                 btn.disabled = true;
 
-                try {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'messages', msgId));
-                    // No need to manually remove from DOM; the onSnapshot listener handles it instantly
-                } catch (err) {
-                    console.error("Delete failed", err);
-                    showStatus("PURGE FAILED", "DATABASE REJECTED DELETION. PERMISSION DENIED.");
-
-                    // Revert button state if failed
-                    btn.innerText = "[ X ] PURGE";
-                    btn.classList.replace('bg-ink', 'bg-alert');
-                    btn.classList.replace('text-acid', 'text-paper');
-                    btn.disabled = false;
-                }
+                setTimeout(() => {
+                    let msgs = getMessages();
+                    msgs = msgs.filter(m => m.id !== msgId);
+                    saveMessages(msgs);
+                    renderMessagesFeed();
+                }, 300); // Simulate network delay for effect
             }
         });
 
