@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITHIL ASTIK // SYSTEM OVERLOAD</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"Space Mono"', 'monospace'],
+                        display: ['"Anton"', 'sans-serif'],
+                    },
+                    colors: {
+                        ink: '#000000',
+                        paper: '#FFFFFF',
+                        acid: '#DFFF00',   /* Acid Neon Green */
+                        magenta: '#FF00FF', /* Hot Pink/Magenta */
+                        cyan: '#00FFFF',    /* Electric Cyan */
+                        alert: '#FF3300',   /* Warning Red */
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FFFFFF;
+            color: #000000;
+            overflow-x: hidden;
+            text-transform: uppercase;
+        }
+
+        /* Brutalist Selection */
+        ::selection {
+            background-color: #FF00FF;
+            color: #FFFFFF;
+        }
+
+        /* Massive Scrollbar */
+        ::-webkit-scrollbar {
+            width: 16px;
+        }
+
+        @media (min-width: 768px) {
+            ::-webkit-scrollbar {
+                width: 24px;
+            }
+        }
+
+        ::-webkit-scrollbar-track {
+            border-left: 4px solid #000;
+            background: #DFFF00;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #FF00FF;
+            border: 4px solid #000;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00FFFF;
+        }
+
+        /* --- MAXIMALIST BORDERS & SHADOWS --- */
+        .border-heavy {
+            border: 4px solid #000000;
+        }
+
+        @media (min-width: 768px) {
+            .border-heavy {
+                border: 6px solid #000000;
+            }
+        }
+
+        .shadow-brutal {
+            box-shadow: 8px 8px 0px #000000;
+            transition: all 0.1s steps(2);
+        }
+
+        .shadow-magenta {
+            box-shadow: 8px 8px 0px #FF00FF;
+        }
+
+        .shadow-acid {
+            box-shadow: 8px 8px 0px #DFFF00;
+        }
+
+        @media (min-width: 768px) {
+            .shadow-brutal {
+                box-shadow: 16px 16px 0px #000000;
+            }
+
+            .shadow-brutal:hover {
+                box-shadow: 4px 4px 0px #000000;
+                transform: translate(12px, 12px);
+            }
+
+            .shadow-magenta {
+                box-shadow: 16px 16px 0px #FF00FF;
+            }
+
+            .shadow-magenta:hover {
+                box-shadow: 4px 4px 0px #FF00FF;
+                transform: translate(12px, 12px);
+            }
+
+            .shadow-acid {
+                box-shadow: 16px 16px 0px #DFFF00;
+            }
+
+            .shadow-acid:hover {
+                box-shadow: 4px 4px 0px #DFFF00;
+                transform: translate(12px, 12px);
+            }
+        }
+
+        /* --- ANIMATIONS --- */
+        .marquee-wrap {
+            overflow: hidden;
+            white-space: nowrap;
+            display: flex;
+            width: 100vw;
+            border-top: 4px solid #000;
+            border-bottom: 4px solid #000;
+        }
+
+        @media (min-width: 768px) {
+            .marquee-wrap {
+                border-top-width: 6px;
+                border-bottom-width: 6px;
+            }
+        }
+
+        .marquee {
+            display: inline-block;
+            animation: marquee 10s linear infinite;
+            padding-right: 1rem;
+        }
+
+        .marquee-reverse {
+            animation: marquee-rev 12s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        @keyframes marquee-rev {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .spin-chaos {
+            animation: spin 8s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .blink {
+            animation: blink 0.5s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .glitch-bg:hover,
+        #mobile-menu-overlay .glitch-bg,
+        #admin-dashboard .glitch-bg {
+            background-image: repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #FFF 25%, #FFF 75%, #000 75%, #000);
+            background-position: 0 0, 10px 10px;
+            background-size: 20px 20px;
+            color: #DFFF00;
+        }
+
+        /* --- STARTUP SEQUENCE --- */
+        #boot-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background-color: #000;
+            color: #DFFF00;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.4s steps(4);
+        }
+
+        #boot-screen.crash {
+            transform: translateY(-100%);
+        }
+
+        .boot-text {
+            font-size: clamp(4rem, 25vw, 12rem);
+            line-height: 0.8;
+            text-shadow: 5px 5px 0 #FF00FF, -5px -5px 0 #00FFFF;
+        }
+
+        @media (min-width: 768px) {
+            .boot-text {
+                text-shadow: 10px 10px 0 #FF00FF, -10px -10px 0 #00FFFF;
+            }
+        }
+
+        /* --- RESPONSIVE HOVER REVEAL IMAGES --- */
+        @media (hover: hover) and (pointer: fine) {
+            .hover-img {
+                position: absolute;
+                width: 350px;
+                aspect-ratio: 1/1;
+                object-fit: cover;
+                border: 8px solid #000;
+                box-shadow: 16px 16px 0 #00FFFF;
+                opacity: 0;
+                pointer-events: none;
+                transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
+                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                z-index: 100;
+                filter: grayscale(100%) contrast(200%);
+            }
+
+            .work-row:hover .hover-img {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotate(5deg);
+                filter: grayscale(0%) contrast(120%);
+            }
+        }
+
+        @media (hover: none),
+        (pointer: coarse) {
+            .hover-img {
+                position: relative;
+                width: 100%;
+                max-width: 280px;
+                aspect-ratio: 1/1;
+                object-fit: cover;
+                border: 4px solid #000;
+                box-shadow: 8px 8px 0 #00FFFF;
+                margin-top: 1.5rem;
+                opacity: 1;
+                filter: grayscale(100%) contrast(150%);
+                transform: rotate(-2deg);
+                transition: filter 0.3s;
+            }
+
+            .work-row:active .hover-img {
+                filter: grayscale(0%) contrast(100%);
+                transform: rotate(0deg);
+            }
+        }
+
+        /* Chaotic Cursor */
+        @media (hover: hover) {
+            body {
+                cursor: crosshair;
+            }
+
+            a,
+            button,
+            input,
+            textarea {
+                cursor: cell;
+            }
+        }
+
+        /* Status UI Styling */
+        #status-modal {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="font-mono bg-paper text-ink overflow-hidden">
+
+    <!-- FEEDBACK MODAL (BRUTALIST) -->
+    <div id="status-overlay"
+        class="fixed inset-0 z-[200] flex items-center justify-center bg-ink/80 p-4 pointer-events-none opacity-0 transition-opacity duration-300">
+        <div id="status-box"
+            class="max-w-xl w-full bg-alert border-heavy shadow-magenta p-8 md:p-12 transform scale-75 transition-transform duration-300">
+            <h3 id="status-title" class="font-display text-5xl md:text-7xl text-paper mb-4 leading-none">ERROR!</h3>
+            <p id="status-message" class="font-bold text-xl md:text-2xl text-ink bg-paper p-4 border-heavy mb-8">
+                CONNECTION FAILED.</p>
+            <button id="close-status"
+                class="bg-ink text-acid font-display text-3xl px-8 py-4 border-heavy hover:bg-magenta hover:text-paper transition-none w-full">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <div id="boot-screen">
+        <div class="font-display boot-text blink" id="boot-counter">00%</div>
+        <div class="mt-8 font-bold text-xl md:text-4xl bg-magenta text-paper px-4 py-2 border-4 border-acid blink text-center mx-4"
+            style="animation-duration: 0.2s">SYSTEM OVERLOAD IN PROGRESS</div>
+        <div class="absolute bottom-6 left-6 md:bottom-10 md:left-10 text-xs text-cyan opacity-80" id="boot-logs">
+            > INITIATING CHAOS_ENGINE.EXE...<br>
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE -->
+    <div id="main-content" class="min-h-screen flex flex-col relative opacity-0 transition-opacity duration-700">
+
+        <div
+            class="fixed top-24 right-10 z-50 w-32 h-32 bg-acid rounded-full border-heavy flex items-center justify-center spin-chaos shadow-magenta pointer-events-none mix-blend-difference hidden md:flex">
+            <span class="font-display text-4xl text-ink text-center leading-none">100%<br>RAW</span>
+        </div>
+        <div
+            class="fixed bottom-10 left-10 z-50 bg-cyan border-heavy px-4 py-2 transform -rotate-12 shadow-brutal pointer-events-none hidden lg:block">
+            <span class="font-display text-3xl text-ink">NO ROUNDED CORNERS</span>
+        </div>
+
+        <header
+            class="border-heavy border-x-0 border-t-0 bg-paper sticky top-0 z-40 flex justify-between items-stretch">
+            <div
+                class="p-4 md:p-6 border-r-[4px] md:border-r-[6px] border-ink bg-acid flex-shrink-0 flex items-center justify-center hover:bg-magenta transition-none group w-2/3 md:w-auto">
+                <a href="#hero"
+                    class="font-display text-5xl md:text-5xl lg:text-6xl tracking-tighter leading-none group-hover:text-paper text-center">MITHIL<br>ASTIK.</a>
+            </div>
+
+            <button id="mobile-menu-trigger"
+                class="w-1/3 md:hidden font-display text-3xl bg-ink text-acid flex items-center justify-center border-none hover:bg-alert hover:text-paper transition-none blink"
+                style="animation-duration: 2s;">
+                [ NAV ]
+            </button>
+
+            <nav class="hidden md:flex flex-grow w-full">
+                <a href="#manifesto"
+                    class="flex-1 border-r-[6px] border-ink flex items-center justify-center p-4 font-bold text-2xl hover:bg-ink hover:text-acid transition-none">THEORY</a>
+                <a href="#works"
+                    class="flex-1 border-r-[6px] border-ink flex items-center justify-center p-4 font-bold text-2xl hover:bg-ink hover:text-cyan transition-none">ARCHIVE</a>
+                <a href="#arsenal"
+                    class="flex-1 border-r-[6px] border-ink flex items-center justify-center p-4 font-bold text-2xl hover:bg-ink hover:text-magenta transition-none">TOOLS</a>
+                <a href="#contact"
+                    class="flex-1 flex items-center justify-center p-4 font-bold text-2xl bg-alert text-paper hover:bg-ink transition-none blink"
+                    style="animation-duration: 1.5s;">HIRE NOW</a>
+            </nav>
+        </header>
+
+        <div id="mobile-menu-overlay"
+            class="fixed inset-0 z-[100] bg-magenta border-heavy flex flex-col pointer-events-none transform -translate-y-full"
+            style="transition: transform 0.25s steps(4, end);">
+            <button id="close-menu-btn"
+                class="w-full border-b-[4px] border-ink p-6 bg-acid text-ink font-display text-5xl text-left hover:bg-ink hover:text-acid transition-none">
+                [X] ABORT
+            </button>
+            <nav class="flex flex-col flex-grow p-4 gap-4 overflow-y-auto bg-cyan glitch-bg">
+                <a href="#manifesto"
+                    class="mobile-nav-link block bg-paper border-heavy p-6 font-display text-6xl text-ink shadow-brutal active:translate-x-2 active:translate-y-2 active:shadow-none transition-none">01.
+                    THEORY</a>
+                <a href="#works"
+                    class="mobile-nav-link block bg-paper border-heavy p-6 font-display text-6xl text-ink shadow-brutal active:translate-x-2 active:translate-y-2 active:shadow-none transition-none">02.
+                    ARCHIVE</a>
+                <a href="#arsenal"
+                    class="mobile-nav-link block bg-paper border-heavy p-6 font-display text-6xl text-ink shadow-brutal active:translate-x-2 active:translate-y-2 active:shadow-none transition-none">03.
+                    TOOLS</a>
+                <a href="#contact"
+                    class="mobile-nav-link block bg-alert border-heavy p-6 font-display text-6xl text-paper shadow-brutal active:translate-x-2 active:translate-y-2 active:shadow-none transition-none blink mt-auto"
+                    style="animation-duration: 0.5s;">+ HIRE NOW</a>
+            </nav>
+        </div>
+
+        <div class="marquee-wrap bg-ink text-paper text-xl md:text-4xl font-display py-2">
+            <div class="marquee flex-shrink-0">VISUAL AGGRESSION /// BREAK THE GRID /// REJECT MINIMALISM /// VISUAL
+                AGGRESSION /// BREAK THE GRID /// REJECT MINIMALISM /// </div>
+            <div class="marquee flex-shrink-0">VISUAL AGGRESSION /// BREAK THE GRID /// REJECT MINIMALISM /// VISUAL
+                AGGRESSION /// BREAK THE GRID /// REJECT MINIMALISM /// </div>
+        </div>
+
+        <!-- HERO SECTION -->
+        <section id="hero"
+            class="relative min-h-[70vh] md:min-h-[80vh] border-heavy border-x-0 border-t-0 bg-cyan flex flex-col justify-center overflow-hidden py-16 md:py-0">
+            <div
+                class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none overflow-hidden">
+                <h1
+                    class="font-display text-[60vw] md:text-[40vw] leading-none text-ink text-center transform rotate-[-5deg] scale-150">
+                    LOUD</h1>
+            </div>
+
+            <div class="relative z-10 px-4 md:px-12 w-full max-w-[1600px] mx-auto">
+                <div
+                    class="bg-paper border-heavy p-4 sm:p-6 md:p-12 shadow-brutal inline-block transform rotate-2 hover:rotate-0 transition-transform">
+                    <span
+                        class="bg-ink text-acid font-bold px-3 py-1 md:px-4 md:py-2 text-sm md:text-xl inline-block mb-4 md:mb-6 shadow-magenta">GRAPHIC
+                        DESIGNER / PROVOCATEUR</span>
+                    <h2 class="font-display text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] leading-[0.9] md:leading-[0.8] tracking-tight uppercase text-ink"
+                        style="-webkit-text-stroke: 2px #000; color: #FFF;">
+                        I DESIGN<br>
+                        <span class="text-magenta" style="-webkit-text-stroke: 0px;">FOR IMPACT.</span><br>
+                        NOT FOR<br>
+                        APPROVAL.
+                    </h2>
+                </div>
+
+                <div
+                    class="mt-8 md:mt-24 max-w-2xl ml-auto bg-acid border-heavy p-4 sm:p-6 md:p-8 shadow-brutal transform -rotate-1">
+                    <p class="font-bold text-lg md:text-3xl leading-tight">
+                        Rejecting sterile corporate aesthetics. Engineering raw, unapologetic brand identities,
+                        editorial layouts, and print campaigns that scream.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- MANIFESTO -->
+        <section id="manifesto"
+            class="border-heavy border-x-0 border-t-0 bg-ink text-paper py-16 md:py-20 px-4 md:px-12 relative">
+            <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-0">
+                <div class="lg:col-span-5 relative z-10">
+                    <h2 class="font-display text-6xl sm:text-7xl md:text-9xl text-acid leading-none mb-4 md:mb-6">
+                        ANTI<br>BORING.</h2>
+                    <div class="w-full h-4 md:h-6 bg-magenta border-y-2 md:border-y-4 border-paper mb-6 md:mb-8"></div>
+                    <p class="text-lg md:text-2xl font-bold leading-relaxed max-w-lg">
+                        Design is not meant to be invisible. It is meant to grab you by the throat. I leverage clashing
+                        palettes, brutal grids, and massive typography to ensure your message is impossible to ignore.
+                    </p>
+                </div>
+
+                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 relative z-10">
+                    <div
+                        class="bg-paper border-heavy border-paper text-ink p-6 md:p-8 hover:bg-magenta hover:border-magenta hover:text-paper shadow-[8px_8px_0_#DFFF00] md:shadow-[12px_12px_0_#DFFF00] transition-none group">
+                        <h3
+                            class="font-display text-4xl md:text-5xl mb-3 md:mb-4 border-b-[4px] border-current pb-2 group-hover:pl-4 transition-all">
+                            01. BRANDING</h3>
+                        <p class="font-bold text-base md:text-lg">Visceral identity systems. Logos that feel like
+                            warnings. Branding that refuses to blend in.</p>
+                    </div>
+                    <div
+                        class="bg-paper border-heavy border-paper text-ink p-6 md:p-8 hover:bg-cyan hover:border-cyan hover:text-ink shadow-[8px_8px_0_#FF00FF] md:shadow-[12px_12px_0_#FF00FF] transition-none group mt-0 sm:mt-12">
+                        <h3
+                            class="font-display text-4xl md:text-5xl mb-3 md:mb-4 border-b-[4px] border-current pb-2 group-hover:pl-4 transition-all">
+                            02. PRINT</h3>
+                        <p class="font-bold text-base md:text-lg">Posters, packaging, and editorial layouts that abuse
+                            CMYK and demand physical attention.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute right-0 top-0 w-1/2 h-full bg-paper mix-blend-difference pointer-events-none hidden lg:block"
+                style="clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);"></div>
+        </section>
+
+        <!-- WORKS -->
+        <section id="works" class="border-heavy border-x-0 border-t-0 bg-paper py-16 md:py-24 relative z-20">
+            <div
+                class="px-4 md:px-12 mb-10 md:mb-16 flex flex-col md:flex-row justify-between md:items-end gap-4 md:gap-6">
+                <h2
+                    class="font-display text-6xl sm:text-8xl md:text-[9rem] leading-none tracking-tighter shadow-[6px_6px_0_#00FFFF] md:shadow-[8px_8px_0_#00FFFF] bg-acid inline-block px-4 border-heavy">
+                    THE ARCHIVE</h2>
+                <div
+                    class="bg-ink text-paper font-bold px-4 py-2 md:px-6 md:py-4 text-sm sm:text-xl md:text-2xl border-heavy">
+                    WARNING: HIGH VISUAL DENSITY</div>
+            </div>
+
+            <div class="border-heavy border-x-0 border-b-0 flex flex-col relative" id="works-container">
+                <div
+                    class="hidden md:flex border-heavy border-x-0 border-t-0 bg-magenta text-ink font-bold text-2xl p-4">
+                    <div class="w-24">ID</div>
+                    <div class="flex-grow">PROJECT NOMENCLATURE</div>
+                    <div class="w-64">DISCIPLINE</div>
+                    <div class="w-32 text-right">YEAR</div>
+                </div>
+
+                <a href="#"
+                    class="work-row border-heavy border-x-0 border-t-0 p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center bg-paper hover:bg-acid hover:text-ink transition-colors duration-0 relative overflow-hidden group">
+                    <div class="w-24 font-display text-3xl md:text-4xl text-alert mb-1 md:mb-0">#01</div>
+                    <div
+                        class="flex-grow font-display text-4xl sm:text-5xl md:text-7xl group-hover:pl-0 md:group-hover:pl-8 transition-all duration-200 z-10 relative">
+                        <span class="bg-paper group-hover:bg-transparent px-1 md:px-2">ESPORTS CLUB</span>
+                    </div>
+                    <div class="w-full md:w-64 flex flex-wrap gap-2 mt-3 md:mt-0 z-10 relative">
+                        <span
+                            class="border-[3px] md:border-4 border-ink px-2 py-1 font-bold text-sm md:text-lg bg-cyan">BRAND_ID</span>
+                    </div>
+                    <div
+                        class="w-32 md:text-right font-display text-2xl sm:text-3xl md:text-4xl mt-3 md:mt-0 z-10 relative">
+                        2026</div>
+                    <img src="https://images.unsplash.com/photo-1600626337651-789f2144bd46?q=80&w=800&auto=format&fit=crop"
+                        alt="Work 1" class="hover-img">
+                </a>
+
+                <a href="#"
+                    class="work-row border-heavy border-x-0 border-t-0 p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center bg-paper hover:bg-cyan hover:text-ink transition-colors duration-0 relative overflow-hidden group">
+                    <div class="w-24 font-display text-3xl md:text-4xl text-alert mb-1 md:mb-0">#02</div>
+                    <div
+                        class="flex-grow font-display text-4xl sm:text-5xl md:text-7xl group-hover:pl-0 md:group-hover:pl-8 transition-all duration-200 z-10 relative">
+                        <span class="bg-paper group-hover:bg-transparent px-1 md:px-2">ATMoS '25</span>
+                    </div>
+                    <div class="w-full md:w-64 flex flex-wrap gap-2 mt-3 md:mt-0 z-10 relative">
+                        <span
+                            class="border-[3px] md:border-4 border-ink px-2 py-1 font-bold text-sm md:text-lg bg-magenta text-paper">EDITORIAL</span>
+                    </div>
+                    <div
+                        class="w-32 md:text-right font-display text-2xl sm:text-3xl md:text-4xl mt-3 md:mt-0 z-10 relative">
+                        2025</div>
+                    <img src="https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=800&auto=format&fit=crop"
+                        alt="Work 2" class="hover-img">
+                </a>
+            </div>
+        </section>
+
+        <!-- ARSENAL -->
+        <section id="arsenal"
+            class="border-heavy border-x-0 border-t-0 bg-alert py-16 md:py-24 px-4 md:px-12 relative overflow-hidden">
+            <h2
+                class="font-display text-5xl sm:text-7xl md:text-[10rem] text-paper text-center leading-none mb-10 md:mb-16 tracking-tight relative z-10 drop-shadow-[4px_4px_0_#000] md:drop-shadow-[10px_10px_0_#000]">
+                WEAPONS OF CHOICE</h2>
+            <div class="flex flex-wrap justify-center gap-3 md:gap-6 max-w-[1200px] mx-auto relative z-10">
+                <div
+                    class="bg-paper border-heavy px-4 py-2 md:px-8 md:py-4 font-display text-3xl sm:text-4xl md:text-6xl hover:bg-acid hover:scale-110 shadow-brutal transition-all cursor-crosshair">
+                    ADOBE ILLUSTRATOR</div>
+                <div
+                    class="bg-ink text-paper border-heavy px-4 py-2 md:px-8 md:py-4 font-display text-3xl sm:text-4xl md:text-6xl hover:bg-cyan hover:text-ink hover:-rotate-3 shadow-magenta transition-all cursor-crosshair">
+                    PHOTOSHOP</div>
+                <div
+                    class="bg-magenta border-heavy px-4 py-2 md:px-8 md:py-4 font-display text-3xl sm:text-4xl md:text-6xl hover:bg-paper hover:rotate-3 shadow-brutal transition-all cursor-crosshair">
+                    INDESIGN</div>
+                <div
+                    class="bg-cyan border-heavy px-4 py-2 md:px-8 md:py-4 font-display text-3xl sm:text-4xl md:text-6xl hover:bg-alert hover:text-paper hover:scale-110 shadow-brutal transition-all cursor-crosshair">
+                    FIGMA</div>
+            </div>
+            <div class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
+                <div class="w-[150vw] h-12 md:h-24 bg-ink transform rotate-45"></div>
+                <div class="w-[150vw] h-12 md:h-24 bg-ink transform -rotate-45 absolute"></div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact" class="bg-magenta py-16 md:py-24 px-4 md:px-12 relative">
+            <div
+                class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-0 md:gap-12 bg-paper border-heavy shadow-brutal">
+                <div
+                    class="p-6 md:p-16 border-b-[4px] lg:border-b-0 lg:border-r-[6px] border-ink bg-acid glitch-bg transition-all duration-300">
+                    <h2 class="font-display text-6xl sm:text-7xl md:text-9xl leading-[0.8] mb-6 md:mb-8">
+                        SUMMON<br>THE<br>CHAOS.</h2>
+                    <p
+                        class="font-bold text-lg md:text-2xl border-l-[6px] md:border-l-8 border-ink pl-4 md:pl-6 bg-paper/90 p-3 md:p-4 border-heavy shadow-magenta transform rotate-1">
+                        Ready to break the mold? Fill out the parameters. I will execute the sequence.
+                    </p>
+                </div>
+                <div class="p-6 md:p-16 bg-paper">
+                    <form id="contact-form" class="flex flex-col gap-6 md:gap-10">
+                        <div class="flex flex-col group">
+                            <label
+                                class="font-display text-2xl md:text-3xl mb-1 md:mb-2 group-focus-within:text-magenta transition-none">ENTER
+                                IDENTIFIER [NAME]</label>
+                            <input type="text" id="form-name" required
+                                class="bg-paper border-heavy border-ink focus:border-magenta focus:bg-acid p-3 md:p-4 text-xl md:text-2xl font-bold focus:outline-none transition-none shadow-[4px_4px_0_#000] md:shadow-[8px_8px_0_#000] focus:shadow-[2px_2px_0_#000] focus:translate-x-1 focus:translate-y-1"
+                                placeholder="YOUR NAME">
+                        </div>
+                        <div class="flex flex-col group">
+                            <label
+                                class="font-display text-2xl md:text-3xl mb-1 md:mb-2 group-focus-within:text-cyan transition-none">RETURN
+                                NODE [EMAIL]</label>
+                            <input type="email" id="form-email" required
+                                class="bg-paper border-heavy border-ink focus:border-cyan focus:bg-ink focus:text-cyan p-3 md:p-4 text-xl md:text-2xl font-bold focus:outline-none transition-none shadow-[4px_4px_0_#000] md:shadow-[8px_8px_0_#000] focus:shadow-[2px_2px_0_#000] focus:translate-x-1 focus:translate-y-1"
+                                placeholder="HELLO@WORLD.COM">
+                        </div>
+                        <div class="flex flex-col group">
+                            <label
+                                class="font-display text-2xl md:text-3xl mb-1 md:mb-2 group-focus-within:text-alert transition-none">DEFINE
+                                OBJECTIVE [MESSAGE]</label>
+                            <textarea rows="4" id="form-message" required
+                                class="bg-paper border-heavy border-ink focus:border-alert focus:bg-paper p-3 md:p-4 text-xl md:text-2xl font-bold focus:outline-none resize-none transition-none shadow-[4px_4px_0_#000] md:shadow-[8px_8px_0_#000] focus:shadow-[2px_2px_0_#000] focus:translate-x-1 focus:translate-y-1"
+                                placeholder="WE NEED VISUAL AGGRESSION..."></textarea>
+                        </div>
+                        <button type="submit" id="submit-btn"
+                            class="mt-2 md:mt-4 bg-ink text-acid font-display text-3xl md:text-5xl py-4 md:py-6 px-6 md:px-12 border-heavy border-ink hover:bg-alert hover:text-paper shadow-magenta hover:shadow-[2px_2px_0_#000] hover:translate-x-1 hover:translate-y-1 md:hover:translate-x-2 md:hover:translate-y-2 transition-all cursor-crosshair w-full md:w-auto self-start disabled:opacity-50 disabled:cursor-not-allowed">
+                            EXECUTE SUBMISSION &crarr;
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer
+            class="border-heavy border-x-0 border-b-0 bg-ink text-paper py-10 md:py-12 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 text-center md:text-left">
+            <div
+                class="font-display text-3xl md:text-4xl bg-acid text-ink px-4 py-2 transform -rotate-2 border-4 border-paper">
+                &copy; 2026 M.A.
+            </div>
+            <div
+                class="flex flex-col sm:flex-row flex-wrap justify-center gap-4 md:gap-6 font-display text-2xl md:text-3xl">
+                <a href="#"
+                    class="hover:text-magenta hover:underline decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8 transition-all">BEHANCE</a>
+                <a href="https://www.instagram.com/lihtimkitsa/"
+                    class="hover:text-cyan hover:underline decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8 transition-all">INSTAGRAM</a>
+                <a href="https://www.linkedin.com/in/mithil-astik"
+                    class="hover:text-acid hover:underline decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8 transition-all">LINKEDIN</a>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
+                <button id="admin-open-btn"
+                    class="font-display text-2xl bg-paper text-ink border-4 border-paper px-4 py-2 hover:bg-alert hover:text-paper hover:border-alert transition-none shadow-magenta">
+                    [ SYS.ADMIN ]
+                </button>
+                <div class="font-bold text-lg md:text-xl tracking-widest text-center md:text-right border-4 border-paper p-3 md:p-4 blink w-full md:w-auto"
+                    style="animation-duration: 2s;">
+                    NO ROUNDED CORNERS.<br>EVER.
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- ADMIN DASHBOARD OVERLAY -->
+    <div id="admin-dashboard" class="fixed inset-0 z-[300] bg-ink text-paper flex-col hidden overflow-hidden">
+        <div
+            class="border-b-[6px] border-paper bg-alert p-6 flex flex-col md:flex-row justify-between items-center shrink-0 gap-4">
+            <h2
+                class="font-display text-4xl sm:text-6xl text-ink leading-none shadow-[4px_4px_0_#FFF] bg-acid px-4 border-4 border-ink transform -rotate-1 inline-block">
+                TERMINAL</h2>
+            <div class="flex gap-4">
+                <button id="admin-logout-btn"
+                    class="hidden font-display text-2xl sm:text-4xl bg-ink text-paper border-4 border-paper px-6 py-4 hover:bg-cyan hover:text-ink hover:border-ink transition-none shadow-brutal active:translate-y-2 active:shadow-none">
+                    LOGOUT
+                </button>
+                <button id="admin-close-btn"
+                    class="font-display text-2xl sm:text-4xl bg-ink text-paper border-4 border-paper px-6 py-4 hover:bg-magenta hover:text-ink hover:border-ink transition-none shadow-brutal active:translate-y-2 active:shadow-none">
+                    [ X ] ABORT
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-grow overflow-y-auto p-4 sm:p-8 md:p-12 bg-ink glitch-bg relative flex flex-col items-center">
+
+            <!-- ADMIN LOGIN VIEW -->
+            <div id="admin-login-view"
+                class="w-full max-w-[600px] bg-paper text-ink p-8 md:p-12 border-heavy shadow-[16px_16px_0_#FF00FF] relative z-10 mt-12 md:mt-24 hidden">
+                <h3 class="font-display text-5xl mb-8 uppercase border-b-4 border-ink pb-2">ADMIN AUTHENTICATION</h3>
+                <form id="admin-login-form" class="flex flex-col gap-6">
+                    <div class="flex flex-col group">
+                        <label
+                            class="font-display text-2xl mb-2 group-focus-within:text-magenta transition-none">PASSPHRASE
+                            [PASSWORD]</label>
+                        <input type="password" id="admin-password" required
+                            class="bg-paper border-heavy border-ink focus:border-magenta p-3 md:p-4 text-xl md:text-2xl font-bold focus:outline-none focus:bg-ink focus:text-magenta shadow-[4px_4px_0_#000] focus:shadow-[2px_2px_0_#000] focus:translate-x-1 focus:translate-y-1 transition-none">
+                    </div>
+                    <button type="submit" id="admin-login-submit"
+                        class="mt-4 bg-ink text-acid font-display text-3xl md:text-4xl py-4 border-heavy border-ink hover:bg-alert hover:text-paper shadow-magenta hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_#000] transition-all disabled:opacity-50">
+                        INITIATE OVERRIDE
+                    </button>
+                </form>
+            </div>
+
+            <!-- ADMIN CONTENT VIEW -->
+            <div class="w-full max-w-[1200px] relative z-10 hidden" id="admin-content-view">
+                <div id="messages-container" class="w-full">
+                    <!-- Messages populated via JS -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FIREBASE MODULES & LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global environment variables (Robust Parsing)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mithil-astik-portfolio';
+        const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let firebaseConfig = null;
+        try {
+            // Safely parse the config to prevent a ReferenceError from halting the entire script 
+            if (typeof __firebase_config !== 'undefined') {
+                firebaseConfig = JSON.parse(__firebase_config);
+            }
+        } catch (error) {
+            console.warn("Firebase configuration not found or invalid. Booting into offline mode.");
+        }
+
+        // --- BOOT SEQUENCE --- 
+        // Boot sequence runs regardless of Firebase status to ensure UI doesn't freeze
+        const bootScreen = document.getElementById('boot-screen');
+        const bootCounter = document.getElementById('boot-counter');
+        const bootLogs = document.getElementById('boot-logs');
+        const mainContent = document.getElementById('main-content');
+
+        const logLines = [
+            "> OVERRIDING DEFAULT CSS...",
+            "> INJECTING NEON VARIABLES...",
+            "> BREAKING GRID SYSTEMS...",
+            "> MAXIMIZING FONT WEIGHTS...",
+            "> REMOVING ALL ROUNDED CORNERS...",
+            "> SENSORY OVERLOAD READY."
+        ];
+
+        let counter = 0;
+        let logIndex = 0;
+
+        const bootInterval = setInterval(() => {
+            counter += Math.floor(Math.random() * 15) + 1;
+
+            if (counter > (logIndex + 1) * 15 && logIndex < logLines.length) {
+                bootLogs.innerHTML += logLines[logIndex] + "<br>";
+                logIndex++;
+            }
+
+            if (counter >= 100) {
+                counter = 100;
+                clearInterval(bootInterval);
+                finishBoot();
+            }
+
+            bootCounter.innerText = counter < 10 ? '0' + counter + '%' : counter + '%';
+            const colors = ['#DFFF00', '#FF00FF', '#00FFFF', '#FF3300', '#FFFFFF'];
+            bootCounter.style.color = colors[Math.floor(Math.random() * colors.length)];
+        }, 80);
+
+        function finishBoot() {
+            bootCounter.innerText = "100%";
+            bootCounter.style.color = "#DFFF00";
+            bootCounter.classList.remove('blink');
+
+            setTimeout(() => {
+                bootScreen.classList.add('crash');
+                setTimeout(() => {
+                    document.body.classList.remove('overflow-hidden');
+                    mainContent.classList.remove('opacity-0');
+                    bootScreen.remove();
+                }, 400);
+            }, 800);
+        }
+
+        // --- HOVER REVEAL ---
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            const workRows = document.querySelectorAll('.work-row');
+            workRows.forEach(row => {
+                const img = row.querySelector('.hover-img');
+                row.addEventListener('mousemove', (e) => {
+                    if (!img) return;
+                    const rect = row.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    img.style.left = `${x}px`;
+                    img.style.top = `${y}px`;
+                });
+            });
+        }
+
+        // --- MOBILE MENU ---
+        const menuTrigger = document.getElementById('mobile-menu-trigger');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const menuOverlay = document.getElementById('mobile-menu-overlay');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+        function toggleMobileMenu() {
+            const isClosed = menuOverlay.classList.contains('-translate-y-full');
+            if (isClosed) {
+                menuOverlay.classList.remove('-translate-y-full', 'pointer-events-none');
+                document.body.classList.add('overflow-hidden');
+                menuTrigger.innerHTML = "[ X ]";
+                menuTrigger.classList.replace('bg-ink', 'bg-alert');
+                menuTrigger.classList.replace('text-acid', 'text-ink');
+            } else {
+                menuOverlay.classList.add('-translate-y-full', 'pointer-events-none');
+                document.body.classList.remove('overflow-hidden');
+                menuTrigger.innerHTML = "[ NAV ]";
+                menuTrigger.classList.replace('bg-alert', 'bg-ink');
+                menuTrigger.classList.replace('text-ink', 'text-acid');
+            }
+        }
+
+        menuTrigger.addEventListener('click', toggleMobileMenu);
+        closeMenuBtn.addEventListener('click', toggleMobileMenu);
+        mobileNavLinks.forEach(link => link.addEventListener('click', toggleMobileMenu));
+
+        // --- UI UTILS ---
+        const statusOverlay = document.getElementById('status-overlay');
+        const statusBox = document.getElementById('status-box');
+        const statusTitle = document.getElementById('status-title');
+        const statusMessage = document.getElementById('status-message');
+        const closeStatusBtn = document.getElementById('close-status');
+        const contactForm = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function showStatus(title, msg, type = 'error') {
+            statusTitle.innerText = title;
+            statusMessage.innerText = msg;
+
+            if (type === 'success') {
+                statusBox.classList.replace('bg-alert', 'bg-acid');
+                statusTitle.classList.replace('text-paper', 'text-ink');
+            } else {
+                statusBox.classList.replace('bg-acid', 'bg-alert');
+                statusTitle.classList.replace('text-ink', 'text-paper');
+            }
+
+            statusOverlay.classList.remove('pointer-events-none', 'opacity-0');
+            statusBox.classList.replace('scale-75', 'scale-100');
+        }
+
+        function hideStatus() {
+            statusOverlay.classList.add('pointer-events-none', 'opacity-0');
+            statusBox.classList.replace('scale-100', 'scale-75');
+        }
+
+        closeStatusBtn.addEventListener('click', hideStatus);
+
+        // --- FIREBASE INITIALIZATION ---
+        let app, auth, db;
+        let currentUser = null;
+
+        if (firebaseConfig) {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            const initAuth = async () => {
+                try {
+                    if (initialToken) {
+                        await signInWithCustomToken(auth, initialToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (err) {
+                    console.error("Auth failed", err);
+                }
+            };
+
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                // If dashboard is open, re-evaluate UI state dynamically
+                if (!adminDashboard.classList.contains('hidden')) {
+                    updateAdminUI();
+                }
+            });
+
+            initAuth();
+        }
+
+        // --- FORM HANDLING ---
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!db || !auth) {
+                showStatus("SYSTEM OFFLINE", "DATABASE NOT CONNECTED.");
+                return;
+            }
+
+            if (!currentUser) {
+                showStatus("ACCESS DENIED", "SYSTEM NOT AUTHENTICATED. PLEASE REFRESH.");
+                return;
+            }
+
+            const name = document.getElementById('form-name').value;
+            const email = document.getElementById('form-email').value;
+            const message = document.getElementById('form-message').value;
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "EXECUTING...";
+
+            try {
+                const messagesCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+
+                await addDoc(messagesCol, {
+                    name,
+                    email,
+                    message,
+                    timestamp: serverTimestamp(),
+                    senderUid: currentUser.uid
+                });
+
+                showStatus("MISSION SUCCESS", "TRANSMISSION RECEIVED. EXPECT CHAOS.", "success");
+                contactForm.reset();
+            } catch (err) {
+                console.error(err);
+                showStatus("SYSTEM FAILURE", "MESSAGE REJECTED BY SERVER. TRY AGAIN.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "EXECUTE SUBMISSION &crarr;";
+            }
+        });
+
+        // --- ADMIN DASHBOARD ---
+        const adminOpenBtn = document.getElementById('admin-open-btn');
+        const adminCloseBtn = document.getElementById('admin-close-btn');
+        const adminLogoutBtn = document.getElementById('admin-logout-btn');
+        const adminDashboard = document.getElementById('admin-dashboard');
+
+        const adminLoginView = document.getElementById('admin-login-view');
+        const adminContentView = document.getElementById('admin-content-view');
+        const adminLoginForm = document.getElementById('admin-login-form');
+        const adminLoginSubmit = document.getElementById('admin-login-submit');
+        const messagesContainer = document.getElementById('messages-container');
+
+        let messagesUnsubscribe = null;
+        let isAdminAuthenticated = false;
+        const ADMIN_PASSPHRASE = "mithu0406";
+
+        // Toggle UI states between Login and Dashboard
+        function updateAdminUI() {
+            if (!db || !auth) {
+                adminLoginView.classList.add('hidden');
+                adminContentView.classList.remove('hidden');
+                adminLogoutBtn.classList.add('hidden');
+                messagesContainer.innerHTML = `<div class="p-8 border-heavy border-alert bg-alert text-paper text-center font-display text-4xl shadow-brutal">SYSTEM OFFLINE. DB UNAVAILABLE.</div>`;
+                return;
+            }
+
+            // A user is fully signed in and verified the passphrase
+            if (isAdminAuthenticated) {
+                adminLoginView.classList.add('hidden');
+                adminContentView.classList.remove('hidden');
+                adminLogoutBtn.classList.remove('hidden');
+                startMessagesListener();
+            } else {
+                // Show Login screen
+                adminLoginView.classList.remove('hidden');
+                adminContentView.classList.add('hidden');
+                adminLogoutBtn.classList.add('hidden');
+                if (messagesUnsubscribe) {
+                    messagesUnsubscribe();
+                    messagesUnsubscribe = null;
+                }
+            }
+        }
+
+        adminOpenBtn.addEventListener('click', () => {
+            adminDashboard.classList.remove('hidden');
+            adminDashboard.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+            updateAdminUI();
+        });
+
+        adminCloseBtn.addEventListener('click', () => {
+            adminDashboard.classList.add('hidden');
+            adminDashboard.classList.remove('flex');
+            document.body.classList.remove('overflow-hidden');
+            if (messagesUnsubscribe) {
+                messagesUnsubscribe();
+                messagesUnsubscribe = null;
+            }
+        });
+
+        // Handle Admin Login Submission
+        adminLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pass = document.getElementById('admin-password').value;
+
+            adminLoginSubmit.disabled = true;
+            adminLoginSubmit.innerText = "AUTHENTICATING...";
+
+            // Simulate authentication delay for brutalist effect
+            setTimeout(() => {
+                if (pass === ADMIN_PASSPHRASE) {
+                    isAdminAuthenticated = true;
+                    adminLoginForm.reset();
+                    updateAdminUI();
+                } else {
+                    showStatus("ACCESS DENIED", "INVALID PASSPHRASE.");
+                }
+                adminLoginSubmit.disabled = false;
+                adminLoginSubmit.innerText = "INITIATE OVERRIDE";
+            }, 600);
+        });
+
+        // Handle Admin Logout
+        adminLogoutBtn.addEventListener('click', () => {
+            isAdminAuthenticated = false;
+            updateAdminUI();
+        });
+
+        // Real-Time Messages Feed
+        function startMessagesListener() {
+            if (!db || !auth || !currentUser) return;
+
+            const messagesCol = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
+            messagesContainer.innerHTML = `<div class="p-8 border-heavy border-paper text-center font-display text-3xl text-acid blink mt-12">DOWNLOADING FROM MAINFRAME...</div>`;
+
+            messagesUnsubscribe = onSnapshot(messagesCol, (snapshot) => {
+                let msgs = [];
+                snapshot.forEach(doc => {
+                    msgs.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Descending order (newest first)
+                msgs.sort((a, b) => {
+                    const timeA = a.timestamp?.toMillis() || 0;
+                    const timeB = b.timestamp?.toMillis() || 0;
+                    return timeB - timeA;
+                });
+
+                renderMessages(msgs);
+            }, (error) => {
+                console.error("Error fetching messages:", error);
+                messagesContainer.innerHTML = `<div class="p-8 border-heavy border-alert bg-alert text-paper text-center font-display text-4xl shadow-brutal mt-12">CRITICAL DB ERROR.</div>`;
+            });
+        }
+
+        // Render Message Cards + Delete Buttons
+        function renderMessages(msgs) {
+            if (msgs.length === 0) {
+                messagesContainer.innerHTML = `<div class="p-12 border-heavy border-paper text-center font-display text-5xl text-paper bg-ink opacity-50 border-dashed mt-12">ARCHIVE EMPTY.</div>`;
+                return;
+            }
+
+            messagesContainer.innerHTML = msgs.map((msg, idx) => {
+                const dateStr = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleString() : 'JUST NOW (SYNCING)';
+                const shadowColor = idx % 2 === 0 ? '#DFFF00' : '#00FFFF';
+
+                return `
+                <div class="border-heavy border-paper p-6 md:p-8 mb-8 bg-paper text-ink transition-transform hover:-translate-y-2 group relative z-10" style="box-shadow: 12px 12px 0px ${shadowColor};">
+                    <div class="flex flex-col md:flex-row justify-between mb-4 border-b-4 border-ink pb-4 gap-4">
+                        <div>
+                            <div class="font-display text-4xl md:text-5xl uppercase tracking-tighter">${msg.name}</div>
+                            <div class="font-bold text-magenta text-xl md:text-2xl mt-1 underline decoration-4 underline-offset-4 break-all">${msg.email}</div>
+                        </div>
+                        <div class="flex flex-col items-start md:items-end gap-3 shrink-0">
+                            <div class="font-mono font-bold text-sm md:text-lg text-left md:text-right bg-ink text-acid p-2 border-2 border-ink shadow-[4px_4px_0_#FF00FF]">
+                                LOG // ${dateStr}
+                            </div>
+                            <button data-id="${msg.id}" class="delete-msg-btn bg-alert text-paper font-display text-xl px-4 py-2 border-4 border-ink hover:bg-ink hover:text-alert shadow-[4px_4px_0_#000] active:translate-y-1 active:shadow-none transition-all">
+                                [ X ] PURGE
+                            </button>
+                        </div>
+                    </div>
+                    <div class="font-bold text-xl md:text-3xl whitespace-pre-wrap leading-tight mt-6">${msg.message}</div>
+                    <div class="absolute -top-4 -right-4 bg-ink text-cyan font-display text-2xl px-3 py-1 border-4 border-paper shadow-brutal hidden md:block opacity-0 group-hover:opacity-100 transition-opacity">
+                        REF_ID: ${msg.id.substring(0, 8)}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Handle Delete Button Clicks (Event Delegation)
+        messagesContainer.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('delete-msg-btn')) {
+                const msgId = e.target.getAttribute('data-id');
+                const btn = e.target;
+
+                // Aggressive loading state for the button
+                btn.innerText = "PURGING...";
+                btn.classList.replace('bg-alert', 'bg-ink');
+                btn.classList.replace('text-paper', 'text-acid');
+                btn.disabled = true;
+
+                try {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'messages', msgId));
+                    // No need to manually remove from DOM; the onSnapshot listener handles it instantly
+                } catch (err) {
+                    console.error("Delete failed", err);
+                    showStatus("PURGE FAILED", "DATABASE REJECTED DELETION. PERMISSION DENIED.");
+
+                    // Revert button state if failed
+                    btn.innerText = "[ X ] PURGE";
+                    btn.classList.replace('bg-ink', 'bg-alert');
+                    btn.classList.replace('text-acid', 'text-paper');
+                    btn.disabled = false;
+                }
+            }
+        });
+
+    </script>
+</body>
+
+</html>
